@@ -1,0 +1,2757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SWAN 1.0 – Web POS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"> [web:8]
+
+  <!-- Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkfAMnCqJ/XGuYVdVQ6VLB1nRWlQVOyZlG6YxRx4JWf9n9+8N+fLQGswg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <style>
+    :root {
+      --royal-deep: #111827;
+      --royal-alt: #020617;
+      --royal-accent: #4b5563;
+      --gold: #fbbf24;
+      --gold-soft: #facc15;
+      --bg-soft: #e5e7eb;
+      --surface: #ffffff;
+      --danger: #e11d48;
+      --success: #16a34a;
+      --info: #06b6d4;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
+      --radius-lg: 18px;
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #111827 0, #020617 42%, #000000 100%);
+      color: #e5e7eb;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .app-shell {
+      display: flex;
+      width: 100%;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px;
+      background: radial-gradient(circle at 0 0, #111827 0, #020617 40%, #000000 100%);
+      border-right: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 20px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 18px 0 40px rgba(0, 0, 0, 0.8);
+      z-index: 4;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 18px;
+    }
+
+    .brand-name-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-badge {
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    .brand-main {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+    }
+
+    .brand-sub {
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #9ca3af;
+    }
+
+    .brand-seal {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0 0, rgba(251, 191, 36, 0.16), transparent 65%);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-seal span {
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #d1d5db;
+    }
+
+    .brand-seal i {
+      color: var(--gold-soft);
+    }
+
+    .sidebar-section-title {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin: 10px 2px 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      margin-top: 2px;
+      flex: 1;
+    }
+
+    .nav-item {
+      margin-bottom: 6px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: radial-gradient(circle at 0 0, rgba(55, 65, 81, 0.8), rgba(15, 23, 42, 1));
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .nav-link i {
+      width: 20px;
+      text-align: center;
+      color: #9ca3af;
+    }
+
+    .nav-link span {
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+    }
+
+    .nav-link:hover {
+      background: radial-gradient(circle at 0 0, rgba(251, 191, 36, 0.14), rgba(15, 23, 42, 1));
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.8);
+      border-color: rgba(148, 163, 184, 0.9);
+    }
+
+    .nav-link.active {
+      background: linear-gradient(90deg, #f97316, #fbbf24, #facc15);
+      color: #111827;
+      border-color: rgba(250, 204, 21, 0.9);
+      box-shadow: 0 22px 40px rgba(250, 204, 21, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .nav-link.active i {
+      color: #111827;
+    }
+
+    .nav-footer {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      color: #6b7280;
+      border-top: 1px solid rgba(31, 41, 55, 0.9);
+      padding-top: 8px;
+    }
+
+    .nav-footer span {
+      display: block;
+    }
+
+    /* MAIN AREA */
+    .main {
+      flex: 1;
+      padding: 16px 18px 18px;
+      overflow: auto;
+    }
+
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .main-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #e5e7eb;
+    }
+
+    .main-subtitle {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(55, 65, 81, 0.9), rgba(15, 23, 42, 1));
+      border-radius: 999px;
+      padding: 6px 11px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.8);
+    }
+
+    .user-pill i {
+      color: var(--gold-soft);
+    }
+
+    .user-pill span {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #e5e7eb;
+    }
+
+    /* CARDS */
+    .card {
+      background: radial-gradient(circle at 0 0, rgba(249, 250, 251, 0.06), rgba(15, 23, 42, 0.95));
+      border-radius: var(--radius-lg);
+      padding: 13px 14px;
+      border: 1px solid rgba(75, 85, 99, 0.95);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 0 0, rgba(250, 204, 21, 0.22), transparent 55%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #e5e7eb;
+    }
+
+    .chip {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      color: #9ca3af;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 1);
+      background: radial-gradient(circle at 0 0, rgba(55, 65, 81, 0.9), rgba(15, 23, 42, 1));
+      color: #e5e7eb;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.9);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #22d3ee);
+      border-color: rgba(8, 145, 178, 0.9);
+      color: #022c22;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24, #facc15);
+      border-color: rgba(252, 211, 77, 0.95);
+      color: #111827;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      border-color: rgba(34, 197, 94, 0.9);
+      color: #052e16;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #b91c1c, #ef4444);
+      border-color: rgba(248, 113, 113, 0.95);
+      color: #fef2f2;
+    }
+
+    .btn-ghost {
+      background: rgba(15, 23, 42, 0.7);
+      border-color: rgba(55, 65, 81, 0.9);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* INPUTS */
+    .input,
+    .select,
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      outline: none;
+      transition: border-color 0.16s ease-out, box-shadow 0.16s ease-out, background 0.16s ease-out;
+    }
+
+    .input:focus,
+    .select:focus,
+    .form-input:focus,
+    .form-select:focus {
+      border-color: rgba(250, 204, 21, 0.9);
+      box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.55);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .select,
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px 8px;
+      padding-right: 26px;
+    }
+
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    .form-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      margin-bottom: 2px;
+      color: #9ca3af;
+    }
+
+    /* GRID HELPERS */
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 1200px) {
+      .grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        padding: 10px 12px;
+      }
+      .brand {
+        width: 210px;
+      }
+      .nav-list {
+        display: flex;
+        margin-left: 12px;
+        overflow-x: auto;
+      }
+      .nav-item {
+        margin-bottom: 0;
+        margin-right: 6px;
+      }
+      .nav-footer {
+        display: none;
+      }
+      .main {
+        padding: 12px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .grid-3,
+      .grid-4,
+      .grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* DASHBOARD CONTENT WITHOUT CHART */
+    .kpi-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #9ca3af;
+      margin-top: 3px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-footer {
+      font-size: 0.7rem;
+      color: #22c55e;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .report-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* POS LAYOUT */
+    #tab-pos .pos-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+      gap: 14px;
+      max-height: 720px;
+      height: calc(100vh - 130px);
+    }
+
+    @media (max-width: 1100px) {
+      #tab-pos .pos-layout {
+        grid-template-columns: minmax(0, 1fr);
+        height: auto;
+        max-height: none;
+      }
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      color: #9ca3af;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      padding-right: 4px;
+      max-height: calc(100% - 56px);
+    }
+
+    .product-card {
+      background: radial-gradient(circle at 0 0, rgba(31, 41, 55, 1), rgba(17, 24, 39, 1));
+      border-radius: 16px;
+      padding: 8px 9px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 1);
+      border-color: rgba(250, 204, 21, 0.9);
+      background: radial-gradient(circle at 0 0, rgba(251, 191, 36, 0.18), rgba(15, 23, 42, 1));
+    }
+
+    .product-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #f9fafb;
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.76rem;
+    }
+
+    .product-price {
+      color: var(--gold-soft);
+      font-weight: 600;
+    }
+
+    .product-stock {
+      color: #9ca3af;
+      font-size: 0.7rem;
+    }
+
+    .cart-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .cart-customer-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .cart-list {
+      flex: 1;
+      margin-top: 4px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0 0, rgba(31, 41, 55, 1), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(75, 85, 99, 0.95);
+      padding: 6px 8px;
+      overflow-y: auto;
+    }
+
+    .cart-empty {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      padding: 12px 4px;
+      text-align: center;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr) auto;
+      align-items: center;
+      font-size: 0.78rem;
+      padding: 6px 3px;
+      border-bottom: 1px dashed rgba(55, 65, 81, 0.95);
+      gap: 4px;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item-name {
+      font-weight: 500;
+      color: #e5e7eb;
+    }
+
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+    }
+
+    .qty-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 1);
+      background: rgba(15, 23, 42, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: background 0.16s ease-out, transform 0.16s ease-out;
+      color: #e5e7eb;
+    }
+
+    .qty-btn:hover {
+      background: rgba(55, 65, 81, 1);
+      transform: translateY(-1px);
+    }
+
+    .cart-item-total {
+      text-align: right;
+      font-weight: 600;
+      color: var(--gold-soft);
+      font-size: 0.78rem;
+    }
+
+    .cart-footer {
+      margin-top: 8px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0 0, rgba(251, 191, 36, 0.16), rgba(0, 0, 0, 1));
+      color: #e5e7eb;
+      padding: 9px 11px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 1);
+    }
+
+    .cart-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.86rem;
+      margin-bottom: 4px;
+    }
+
+    .cart-summary-row span:first-child {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.72rem;
+      color: #9ca3af;
+    }
+
+    .cart-summary-row span:last-child {
+      font-size: 1rem;
+      color: #facc15;
+      font-weight: 600;
+    }
+
+    .cart-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    /* TABLES */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .table th,
+    .table td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(55, 65, 81, 0.95);
+      text-align: left;
+    }
+
+    .table thead th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #9ca3af;
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .table tbody tr:hover {
+      background: rgba(31, 41, 55, 0.95);
+    }
+
+    .pill-amount {
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 0.95);
+      background: rgba(15, 23, 42, 1);
+      font-size: 0.78rem;
+    }
+
+    .amount-gold {
+      color: var(--gold-soft);
+    }
+
+    .amount-danger {
+      color: var(--danger);
+    }
+
+    .amount-success {
+      color: var(--success);
+    }
+
+    /* BANK CARDS */
+    .bank-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .bank-card {
+      border-radius: 18px;
+      padding: 12px 14px;
+      background: radial-gradient(circle at 0 0, rgba(250, 204, 21, 0.14), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(55, 65, 81, 0.95);
+      color: #e5e7eb;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bank-card::after {
+      content: "";
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 8px solid rgba(55, 65, 81, 0.9);
+      right: -18px;
+      bottom: -18px;
+    }
+
+    .bank-name {
+      font-size: 0.86rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .bank-balance {
+      margin-top: 8px;
+      font-size: 1.06rem;
+      font-weight: 600;
+      color: #facc15;
+    }
+
+    .bank-type {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    /* CUSTOMERS */
+    .credit-positive {
+      color: var(--success);
+    }
+
+    .credit-negative {
+      color: var(--danger);
+    }
+
+    /* MODALS */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 10% 0, rgba(0, 0, 0, 0.7), rgba(3, 7, 18, 0.96));
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+      backdrop-filter: blur(14px);
+      animation: fadeInOverlay 0.16s ease-out forwards;
+    }
+
+    .overlay.visible {
+      display: flex;
+    }
+
+    @keyframes fadeInOverlay {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal {
+      background: radial-gradient(circle at 0 0, rgba(31, 41, 55, 1), rgba(15, 23, 42, 1));
+      border-radius: 18px;
+      padding: 15px 16px 13px;
+      width: min(480px, 94vw);
+      color: #e5e7eb;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.95);
+      border: 1px solid rgba(75, 85, 99, 0.95);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal::before {
+      content: "";
+      position: absolute;
+      inset: -120%;
+      background: radial-gradient(circle at 0 0, rgba(250, 204, 21, 0.28), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.96rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .modal-close {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 0.95);
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.16s ease-out, transform 0.16s ease-out;
+    }
+
+    .modal-close:hover {
+      background: rgba(30, 64, 175, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .modal-body {
+      position: relative;
+      z-index: 1;
+      font-size: 0.82rem;
+    }
+
+    .modal-footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* RECEIPT */
+    .receipt-body {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-family: 'Courier New', monospace;
+      color: #111827;
+      font-size: 0.8rem;
+      box-shadow: inset 0 0 0 1px rgba(209, 213, 219, 0.95);
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .receipt-line {
+      border-top: 1px dashed #9ca3af;
+      margin: 6px 0;
+    }
+
+    .receipt-center {
+      text-align: center;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* TOASTS */
+    .toast-container {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: 220px;
+      max-width: 340px;
+      background: radial-gradient(circle at 0 0, rgba(15, 23, 42, 1), rgba(3, 7, 18, 1));
+      color: #e5e7eb;
+      padding: 8px 10px;
+      border-radius: 999px;
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: auto;
+      transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.4, 1), opacity 0.22s ease-out;
+      border: 1px solid rgba(55, 65, 81, 0.95);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .toast-success .toast-icon {
+      background: rgba(34, 197, 94, 0.25);
+      color: #bbf7d0;
+    }
+
+    .toast-error .toast-icon {
+      background: rgba(248, 113, 113, 0.23);
+      color: #fecaca;
+    }
+
+    .toast-message strong {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .toast-message span {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    /* TABS VISIBILITY */
+    .tab-view {
+      display: none;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-name-line">
+          <div class="brand-main">SWAN 1.0</div>
+          <span class="brand-badge">Royal</span>
+        </div>
+        <div class="brand-sub">Steel · Warehouse · Accounting · Network</div>
+        <div class="brand-seal">
+          <span>Industrial web pos</span>
+          <i class="fa-solid fa-feather-pointed"></i>
+        </div>
+      </div>
+
+      <div class="sidebar-section-title">Workspace</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a class="nav-link active" data-tab="dashboard">
+            <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-tab="pos">
+            <i class="fa-solid fa-cash-register"></i><span>POS</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-tab="ledger">
+            <i class="fa-solid fa-scroll"></i><span>Sales Ledger</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-tab="inventory">
+            <i class="fa-solid fa-boxes-stacked"></i><span>Inventory</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-tab="banking">
+            <i class="fa-solid fa-vault"></i><span>Banking</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-tab="customers">
+            <i class="fa-solid fa-user-group"></i><span>Customers</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-tab="attendance">
+            <i class="fa-solid fa-user-check"></i><span>Attendance</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-tab="expenses">
+            <i class="fa-solid fa-file-invoice"></i><span>Expenses</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-footer">
+        <span>Session: Front Counter A</span>
+        <span>SWAN 1.0 · Royal Black Theme</span>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div>
+          <div class="main-title" id="page-title">Executive Dashboard</div>
+          <div class="main-subtitle">Gross & net profit · live stock value · credit control</div>
+        </div>
+        <div class="user-pill">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Supervisor · Online</span>
+        </div>
+      </header>
+
+      <!-- DASHBOARD TAB -->
+      <section id="tab-dashboard" class="tab-view active">
+        <div class="grid grid-4">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Total Revenue</div>
+              <span class="chip">All posted sales</span>
+            </div>
+            <div class="kpi-value" id="kpi-total-revenue">PKR 0</div>
+            <div class="kpi-label">Includes cash, bank, and credit bills</div>
+            <div class="kpi-footer">Use profit report for margins.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Gross Profit</div>
+              <span class="chip">Sales - Cost</span>
+            </div>
+            <div class="kpi-value" id="kpi-gross-profit">PKR 0</div>
+            <div class="kpi-label">Pure trading margin before expenses</div>
+            <div class="kpi-footer">Healthy = positive and rising.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Net Profit</div>
+              <span class="chip">After expenses</span>
+            </div>
+            <div class="kpi-value" id="kpi-net-profit">PKR 0</div>
+            <div class="kpi-label">Gross profit minus expenses</div>
+            <div class="kpi-footer">Tracks enterprise performance.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Receivables</div>
+              <span class="chip">Customer credit</span>
+            </div>
+            <div class="kpi-value" id="kpi-receivables">PKR 0</div>
+            <div class="kpi-label">Outstanding customer balances</div>
+            <div class="kpi-footer">Collect before re-supplying.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="card-header">
+            <div class="card-title">Reports & Actions</div>
+            <span class="chip">Printable, audit-ready</span>
+          </div>
+          <div class="report-actions">
+            <button id="btn-print-profit-report" class="btn btn-gold">
+              <i class="fa-solid fa-print"></i> Profit Report
+            </button>
+            <button id="btn-print-stock-report" class="btn btn-primary">
+              <i class="fa-solid fa-warehouse"></i> Stock Report
+            </button>
+            <button id="btn-show-stock-value" class="btn btn-ghost">
+              <i class="fa-solid fa-scale-balanced"></i> Stock Value Now
+            </button>
+          </div>
+          <div style="margin-top:10px;font-size:0.8rem;color:#9ca3af;position:relative;z-index:1;">
+            The dashboard focuses on clean itemized reports instead of charts, following modern POS reporting practice for quick export and printing. [web:12][web:19]
+          </div>
+        </div>
+      </section>
+
+      <!-- POS TAB -->
+      <section id="tab-pos" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">POS Terminal</div>
+            <span class="chip"><i class="fa-solid fa-circle-dot" style="color:#22c55e;margin-right:4px;"></i> Live session</span>
+          </div>
+
+          <div class="pos-layout">
+            <!-- LEFT: PRODUCTS -->
+            <div>
+              <div class="search-row">
+                <input id="product-search" class="input" placeholder="Search SKU or product name..." />
+                <select id="category-filter" class="select" style="max-width:170px;">
+                  <option value="all">All Categories</option>
+                </select>
+              </div>
+              <div class="products-grid" id="products-grid"></div>
+            </div>
+
+            <!-- RIGHT: CART -->
+            <div class="cart-panel">
+              <div class="cart-customer-row">
+                <select id="customer-select" class="select">
+                  <!-- filled later -->
+                </select>
+                <button id="btn-add-customer-inline" class="btn btn-ghost" style="white-space:nowrap;">
+                  <i class="fa-solid fa-user-plus"></i>New
+                </button>
+              </div>
+
+              <div class="cart-list" id="cart-list">
+                <div class="cart-empty">Cart is empty. Tap an item on the left grid to start the bill.</div>
+              </div>
+
+              <div class="cart-footer">
+                <div class="cart-summary-row">
+                  <span>Cart total</span>
+                  <span id="cart-total">PKR 0</span>
+                </div>
+                <div class="cart-summary-row" style="font-size:0.75rem;">
+                  <span>Items</span>
+                  <span id="cart-items-count">0</span>
+                </div>
+                <div class="cart-summary-row" style="font-size:0.75rem;">
+                  <span>Service charges</span>
+                  <span id="cart-service-amount">PKR 0</span>
+                </div>
+                <div class="cart-summary-row" style="font-size:0.75rem;">
+                  <span>Grand total</span>
+                  <span id="cart-grand-total">PKR 0</span>
+                </div>
+                <div class="cart-actions">
+                  <button id="btn-set-service" class="btn btn-ghost" title="Add service/packing charges">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> Service
+                  </button>
+                  <button id="btn-cash" class="btn btn-success">
+                    <i class="fa-solid fa-money-bill-wave"></i> Cash
+                  </button>
+                  <button id="btn-bank" class="btn btn-primary">
+                    <i class="fa-solid fa-building-columns"></i> Bank / Online
+                  </button>
+                  <button id="btn-credit" class="btn btn-gold">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Credit
+                  </button>
+                  <button id="btn-clear-cart" class="btn btn-ghost">
+                    <i class="fa-solid fa-xmark"></i> Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SALES LEDGER -->
+      <section id="tab-ledger" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Sales Ledger</div>
+            <span class="chip">Invoices & held bills</span>
+          </div>
+          <div style="margin-top:6px;overflow:auto;max-height:calc(100vh - 150px);">
+            <table class="table" id="ledger-table">
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Method</th>
+                  <th>Gross</th>
+                  <th>Net</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- INVENTORY -->
+      <section id="tab-inventory" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Inventory</div>
+            <div style="display:flex;gap:6px;">
+              <button id="btn-add-product" class="btn btn-primary">
+                <i class="fa-solid fa-box-open"></i> Add Item
+              </button>
+              <button id="btn-stock-report-top" class="btn btn-ghost">
+                <i class="fa-solid fa-print"></i> Stock Report
+              </button>
+            </div>
+          </div>
+          <div style="margin-top:6px;overflow:auto;max-height:calc(100vh - 150px);">
+            <table class="table" id="inventory-table">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Location</th>
+                  <th>Price</th>
+                  <th>Cost</th>
+                  <th>Stock</th>
+                  <th>Stock Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- BANKING -->
+      <section id="tab-banking" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Banking & Treasury</div>
+            <button id="btn-add-bank" class="btn btn-primary">
+              <i class="fa-solid fa-building-columns"></i> Add Bank
+            </button>
+          </div>
+          <div class="bank-grid" id="bank-grid" style="margin-top:10px;"></div>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section id="tab-customers" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Customers</div>
+            <button id="btn-add-customer-main" class="btn btn-primary">
+              <i class="fa-solid fa-user-plus"></i> Add Customer
+            </button>
+          </div>
+          <div style="margin-top:6px;overflow:auto;max-height:calc(100vh - 150px);">
+            <table class="table" id="customers-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Opening Balance</th>
+                  <th>Current Credit</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ATTENDANCE -->
+      <section id="tab-attendance" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Employee Attendance</div>
+            <button id="btn-add-employee" class="btn btn-primary">
+              <i class="fa-solid fa-user-plus"></i> Add Employee
+            </button>
+          </div>
+          <div style="margin-top:6px;overflow:auto;max-height:calc(100vh - 150px);">
+            <table class="table" id="attendance-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Employee</th>
+                  <th>Shift</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPENSES -->
+      <section id="tab-expenses" class="tab-view">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Expenses</div>
+            <button id="btn-add-expense" class="btn btn-primary">
+              <i class="fa-solid fa-plus"></i> Add Expense
+            </button>
+          </div>
+          <div style="margin-top:6px;overflow:auto;max-height:calc(100vh - 150px);">
+            <table class="table" id="expenses-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- dynamic -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- BANK SELECTION MODAL -->
+  <div id="bank-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Select Receiving Bank</div>
+        <button class="modal-close" data-close-modal="bank-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label">Receiving account</div>
+          <select id="bank-select" class="form-select"></select>
+        </div>
+        <p style="font-size:0.75rem;color:#cbd5f5;margin-top:4px;">
+          Routing this sale to bank will move value to that account only, leaving the cash till untouched.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="bank-modal">Cancel</button>
+        <button id="bank-modal-confirm" class="btn btn-gold">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PRODUCT MODAL -->
+  <div id="product-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Inventory Item</div>
+        <button class="modal-close" data-close-modal="product-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label">SKU</div>
+          <input id="pm-sku" class="form-input" placeholder="SKU-001" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Name</div>
+          <input id="pm-name" class="form-input" placeholder="High Tensile Bolt M10" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Category</div>
+          <input id="pm-category" class="form-input" placeholder="Hardware" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Location</div>
+          <input id="pm-location" class="form-input" placeholder="Rack A1 / Yard" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Price (PKR)</div>
+          <input id="pm-price" class="form-input" type="number" min="0" step="1" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Cost (PKR)</div>
+          <input id="pm-cost" class="form-input" type="number" min="0" step="1" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Opening Stock</div>
+          <input id="pm-stock" class="form-input" type="number" min="0" step="1" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="product-modal">Cancel</button>
+        <button id="product-modal-save" class="btn btn-gold">Save Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD BANK MODAL -->
+  <div id="add-bank-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Bank Account</div>
+        <button class="modal-close" data-close-modal="add-bank-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label">Account Name</div>
+          <input id="bm-name" class="form-input" placeholder="Meezan Gulberg Branch" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Type</div>
+          <input id="bm-type" class="form-input" placeholder="Current Account" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Opening Balance (PKR)</div>
+          <input id="bm-balance" class="form-input" type="number" min="0" step="1" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="add-bank-modal">Cancel</button>
+        <button id="add-bank-save" class="btn btn-gold">Save Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CUSTOMER MODAL -->
+  <div id="customer-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Customer</div>
+        <button class="modal-close" data-close-modal="customer-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label">Name</div>
+          <input id="cm-name" class="form-input" placeholder="Al Rahman Traders" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Phone</div>
+          <input id="cm-phone" class="form-input" placeholder="+92 3xx xxxxxxx" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Opening Credit Balance (PKR)</div>
+          <input id="cm-opening" class="form-input" type="number" min="0" step="1" />
+        </div>
+        <p style="font-size:0.75rem;color:#cbd5f5;margin-top:4px;">
+          Opening balance is brought forward receivable for this customer and is treated as already outstanding. [web:20]
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="customer-modal">Cancel</button>
+        <button id="customer-modal-save" class="btn btn-gold">Save Customer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICE CHARGES MODAL -->
+  <div id="service-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Service Charges</div>
+        <button class="modal-close" data-close-modal="service-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label">Description</div>
+          <input id="sm-desc" class="form-input" placeholder="Loading / packing / delivery" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Amount (PKR)</div>
+          <input id="sm-amount" class="form-input" type="number" min="0" step="1" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="service-modal">Cancel</button>
+        <button id="service-modal-save" class="btn btn-gold">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECEIPT OPTIONS MODAL (SAVE / HOLD / PRINT) -->
+  <div id="receipt-options-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Finalize Receipt</div>
+        <button class="modal-close" data-close-modal="receipt-options-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.8rem;margin-bottom:6px;">
+          Choose how this invoice should be handled. Holding a bill keeps stock reserved but does not touch cash, bank, or credit.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button id="ro-hold" class="btn btn-ghost">Hold Only</button>
+        <button id="ro-save" class="btn btn-primary">Save Only</button>
+        <button id="ro-save-print" class="btn btn-gold">Save & Print</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECEIPT MODAL -->
+  <div id="receipt-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Thermal Receipt</div>
+        <button class="modal-close" data-close-modal="receipt-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="receipt-body" id="receipt-body"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-print-receipt" class="btn btn-gold">
+          <i class="fa-solid fa-print"></i> Browser Print
+        </button>
+        <button class="btn btn-ghost" data-close-modal="receipt-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREDIT PAYMENT MODAL -->
+  <div id="credit-pay-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Record Credit Payment</div>
+        <button class="modal-close" data-close-modal="credit-pay-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="cp-customer-label" style="margin-bottom:6px;font-size:0.8rem;"></p>
+        <div class="form-group">
+          <div class="form-label">Payment Amount (PKR)</div>
+          <input id="cp-amount" class="form-input" type="number" min="0" step="1" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Method</div>
+          <select id="cp-method" class="form-select">
+            <option value="Cash">Cash</option>
+            <option value="Bank">Bank</option>
+          </select>
+        </div>
+        <div class="form-group" id="cp-bank-group" style="display:none;">
+          <div class="form-label">Receiving Bank</div>
+          <select id="cp-bank" class="form-select"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="credit-pay-modal">Cancel</button>
+        <button id="credit-pay-save" class="btn btn-gold">Save & Print</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMPLOYEE MODAL -->
+  <div id="employee-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Mark Attendance</div>
+        <button class="modal-close" data-close-modal="employee-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label">Employee Name</div>
+          <input id="em-name" class="form-input" placeholder="Counter Operator" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Shift</div>
+          <input id="em-shift" class="form-input" placeholder="Morning / Evening" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Status</div>
+          <select id="em-status" class="form-select">
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+            <option value="Leave">Leave</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="employee-modal">Cancel</button>
+        <button id="employee-save" class="btn btn-gold">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPENSE MODAL -->
+  <div id="expense-modal" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Add Expense</div>
+        <button class="modal-close" data-close-modal="expense-modal">
+          <i class="fa-solid fa-xmark" style="font-size:0.9rem;color:#e5e7eb;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label">Category</div>
+          <input id="ex-category" class="form-input" placeholder="Rent / Wages / Fuel" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Description</div>
+          <input id="ex-desc" class="form-input" placeholder="Detail" />
+        </div>
+        <div class="form-group">
+          <div class="form-label">Amount (PKR)</div>
+          <input id="ex-amount" class="form-input" type="number" min="0" step="1" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close-modal="expense-modal">Cancel</button>
+        <button id="expense-save" class="btn btn-gold">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    /**********************
+     * STATE
+     **********************/
+    const app = {
+      data: {
+        products: [
+          { id: 1, sku: 'HD-001', name: 'High Tensile Bolt M10', category: 'Hardware', location: 'Rack A1', price: 180, cost: 120, stock: 120 },
+          { id: 2, sku: 'HD-002', name: 'Spring Washer 10mm', category: 'Hardware', location: 'Rack A2', price: 40, cost: 18, stock: 260 },
+          { id: 3, sku: 'EL-010', name: 'Industrial LED Flood 100W', category: 'Electrical', location: 'Rack B1', price: 7500, cost: 5400, stock: 22 },
+          { id: 4, sku: 'EL-011', name: 'MCB 32A 3P Schneider', category: 'Electrical', location: 'Rack B2', price: 2400, cost: 1800, stock: 38 },
+          { id: 5, sku: 'PV-020', name: 'PVC Pipe 1" Class D', category: 'Plumbing', location: 'Yard P1', price: 520, cost: 380, stock: 90 },
+          { id: 6, sku: 'PV-021', name: 'GI Elbow 1"', category: 'Plumbing', location: 'Yard P2', price: 180, cost: 110, stock: 170 }
+        ],
+        customers: [
+          { id: 1, name: 'Guest Customer', phone: '', credit: 0, opening: 0, isGuest: true },
+          { id: 2, name: 'Al Haider Engineering', phone: '+92 321 1112233', credit: 0, opening: 0 },
+          { id: 3, name: 'Blue River Textiles', phone: '+92 333 4455667', credit: 35000, opening: 35000 },
+          { id: 4, name: 'Mughal Steel Works', phone: '+92 300 9988776', credit: 0, opening: 0 }
+        ],
+        banks: [
+          { id: 1, name: 'Cash Till', type: 'Cash Drawer', balance: 65000, isCash: true },
+          { id: 2, name: 'HBL I-8 Industrial', type: 'Current Account', balance: 215000 },
+          { id: 3, name: 'Meezan Blue Area', type: 'Current Account', balance: 164500 }
+        ],
+        sales: [],
+        heldBills: [],
+        expenses: [],
+        attendance: [],
+        cart: [],
+        serviceCharge: { description: '', amount: 0 },
+        invoiceCounter: 1,
+        activeTab: 'dashboard'
+      }
+    };
+
+    /**********************
+     * UTILS
+     **********************/
+    const formatMoney = (amount) => 'PKR ' + Number(amount || 0).toLocaleString('en-PK', { maximumFractionDigits: 0 });
+
+    const findBankById = (id) => app.data.banks.find((b) => b.id === id);
+    const findCustomerById = (id) => app.data.customers.find((c) => c.id === id);
+
+    const computeTotals = () => {
+      const profitData = app.data.sales.reduce(
+        (acc, s) => {
+          acc.revenue += s.total;
+          acc.grossProfit += s.grossProfit;
+          return acc;
+        },
+        { revenue: 0, grossProfit: 0 }
+      );
+      const expensesTotal = app.data.expenses.reduce((sum, e) => sum + e.amount, 0);
+      const receivables = app.data.customers.filter((c) => !c.isGuest).reduce((sum, c) => sum + c.credit, 0);
+      return {
+        totalRevenue: profitData.revenue,
+        grossProfit: profitData.grossProfit,
+        netProfit: profitData.grossProfit - expensesTotal,
+        receivables
+      };
+    };
+
+    const computeStockValue = () => app.data.products.reduce((sum, p) => sum + p.stock * p.cost, 0);
+
+    /**********************
+     * TOASTS
+     **********************/
+    const toastContainer = document.getElementById('toast-container');
+
+    function showToast(type, title, message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast toast-' + type;
+      toast.innerHTML = `
+        <div class="toast-icon">
+          ${type === 'success' ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-triangle-exclamation"></i>'}
+        </div>
+        <div class="toast-message">
+          <strong>${title}</strong>
+          <span>${message}</span>
+        </div>
+      `;
+      toastContainer.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 220);
+      }, 3600);
+    }
+
+    /**********************
+     * MODAL HELPERS
+     **********************/
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('visible');
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('visible');
+    }
+
+    document.querySelectorAll('[data-close-modal]').forEach((btn) => {
+      btn.addEventListener('click', () => closeModal(btn.getAttribute('data-close-modal')));
+    });
+
+    /**********************
+     * SIDEBAR NAVIGATION
+     **********************/
+    const pageTitleEl = document.getElementById('page-title');
+
+    document.querySelectorAll('.nav-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        const tab = link.getAttribute('data-tab');
+        if (!tab || tab === app.data.activeTab) return;
+        document.querySelectorAll('.nav-link').forEach((l) => l.classList.remove('active'));
+        link.classList.add('active');
+        document.querySelectorAll('.tab-view').forEach((view) => view.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        app.data.activeTab = tab;
+        const titles = {
+          dashboard: 'Executive Dashboard',
+          pos: 'POS Terminal',
+          ledger: 'Sales Ledger',
+          inventory: 'Inventory',
+          banking: 'Banking & Treasury',
+          customers: 'Customers',
+          attendance: 'Employee Attendance',
+          expenses: 'Expenses'
+        };
+        pageTitleEl.textContent = titles[tab] || 'SWAN 1.0';
+      });
+    });
+
+    /**********************
+     * RENDERERS
+     **********************/
+    function renderDashboard() {
+      const { totalRevenue, grossProfit, netProfit, receivables } = computeTotals();
+      document.getElementById('kpi-total-revenue').textContent = formatMoney(totalRevenue);
+      document.getElementById('kpi-gross-profit').textContent = formatMoney(grossProfit);
+      document.getElementById('kpi-net-profit').textContent = formatMoney(netProfit);
+      document.getElementById('kpi-receivables').textContent = formatMoney(receivables);
+    }
+
+    function renderCategoryFilter() {
+      const select = document.getElementById('category-filter');
+      const categories = Array.from(new Set(app.data.products.map((p) => p.category))).sort();
+      select.innerHTML = '<option value="all">All Categories</option>' + categories.map((c) => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('products-grid');
+      const searchTerm = document.getElementById('product-search').value.toLowerCase();
+      const category = document.getElementById('category-filter').value;
+      let products = app.data.products.slice();
+      if (category !== 'all') products = products.filter((p) => p.category === category);
+      if (searchTerm) {
+        products = products.filter(
+          (p) =>
+            p.name.toLowerCase().includes(searchTerm) ||
+            p.sku.toLowerCase().includes(searchTerm) ||
+            p.category.toLowerCase().includes(searchTerm)
+        );
+      }
+      if (products.length === 0) {
+        grid.innerHTML = '<div class="cart-empty" style="margin-top:10px;">No items match current filters.</div>';
+        return;
+      }
+      grid.innerHTML = products
+        .map(
+          (p) => `
+        <div class="product-card" data-product-id="${p.id}">
+          <div class="product-name">${p.name}</div>
+          <div class="product-meta">
+            <span class="product-price">${formatMoney(p.price)}</span>
+            <span class="product-stock">Stock: ${p.stock}</span>
+          </div>
+          <div class="product-meta" style="margin-top:2px;font-size:0.7rem;">
+            <span class="badge">SKU: ${p.sku}</span>
+            <span class="badge">${p.category}</span>
+          </div>
+          <div class="product-meta" style="margin-top:2px;font-size:0.7rem;">
+            <span class="badge">Loc: ${p.location}</span>
+            <span class="badge">Cost: ${formatMoney(p.cost)}</span>
+          </div>
+        </div>
+      `
+        )
+        .join('');
+      grid.querySelectorAll('.product-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const id = Number(card.getAttribute('data-product-id'));
+          addToCart(id);
+        });
+      });
+    }
+
+    function renderCustomersDropdown() {
+      const select = document.getElementById('customer-select');
+      select.innerHTML = app.data.customers.map((c) => `<option value="${c.id}" ${c.isGuest ? 'selected' : ''}>${c.name}</option>`).join('');
+    }
+
+    function renderCustomersTable() {
+      const tbody = document.querySelector('#customers-table tbody');
+      tbody.innerHTML = app.data.customers
+        .filter((c) => !c.isGuest)
+        .map(
+          (c) => `
+        <tr>
+          <td>${c.name}</td>
+          <td>${c.phone || '-'}</td>
+          <td><span class="pill-amount amount-gold">${formatMoney(c.opening)}</span></td>
+          <td>
+            <span class="pill-amount ${c.credit > 0 ? 'amount-danger credit-negative' : 'amount-success credit-positive'}">
+              ${formatMoney(c.credit)}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-ghost btn-credit-pay" data-customer-id="${c.id}" style="padding:3px 8px;font-size:0.7rem;">
+              Pay Credit
+            </button>
+          </td>
+        </tr>
+      `
+        )
+        .join('');
+      document.querySelectorAll('.btn-credit-pay').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.getAttribute('data-customer-id'));
+          openCreditPayment(id);
+        });
+      });
+    }
+
+    function renderBanking() {
+      const grid = document.getElementById('bank-grid');
+      grid.innerHTML = app.data.banks
+        .map(
+          (b) => `
+        <div class="bank-card">
+          <div class="bank-name">${b.name}</div>
+          <div class="bank-balance">${formatMoney(b.balance)}</div>
+          <div class="bank-type">${b.isCash ? 'Cash Till' : b.type}</div>
+        </div>
+      `
+        )
+        .join('');
+    }
+
+    function renderBankSelects() {
+      const bankSelect = document.getElementById('bank-select');
+      const cpBankSelect = document.getElementById('cp-bank');
+      const banks = app.data.banks.filter((b) => !b.isCash);
+      bankSelect.innerHTML = banks.map((b) => `<option value="${b.id}">${b.name}</option>`).join('');
+      cpBankSelect.innerHTML = banks.map((b) => `<option value="${b.id}">${b.name}</option>`).join('');
+    }
+
+    function renderInventory() {
+      const tbody = document.querySelector('#inventory-table tbody');
+      tbody.innerHTML = app.data.products
+        .map(
+          (p) => `
+        <tr>
+          <td>${p.sku}</td>
+          <td>${p.name}</td>
+          <td>${p.category}</td>
+          <td>${p.location}</td>
+          <td>${formatMoney(p.price)}</td>
+          <td>${formatMoney(p.cost)}</td>
+          <td>${p.stock}</td>
+          <td>${formatMoney(p.stock * p.cost)}</td>
+        </tr>
+      `
+        )
+        .join('');
+    }
+
+    function renderLedger() {
+      const tbody = document.querySelector('#ledger-table tbody');
+      const rows = [];
+      app.data.sales.forEach((s) => {
+        rows.push(`
+          <tr>
+            <td>${s.invoiceId}</td>
+            <td>${new Date(s.date).toLocaleString()}</td>
+            <td>${s.customerName}</td>
+            <td>${s.paymentMethod}</td>
+            <td><span class="pill-amount amount-gold">${formatMoney(s.grossProfit + s.costOfGoods)}</span></td>
+            <td><span class="pill-amount amount-success">${formatMoney(s.net)}</span></td>
+            <td><span class="badge">Posted</span></td>
+          </tr>
+        `);
+      });
+      app.data.heldBills.forEach((h) => {
+        rows.push(`
+          <tr>
+            <td>${h.invoiceId}</td>
+            <td>${new Date(h.date).toLocaleString()}</td>
+            <td>${h.customerName}</td>
+            <td>Held</td>
+            <td><span class="pill-amount amount-gold">${formatMoney(h.total)}</span></td>
+            <td><span class="pill-amount amount-gold">${formatMoney(h.total)}</span></td>
+            <td><span class="badge">Held</span></td>
+          </tr>
+        `);
+      });
+      tbody.innerHTML = rows.reverse().join('');
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cart-list');
+      if (app.data.cart.length === 0) {
+        list.innerHTML = '<div class="cart-empty">Cart is empty. Tap an item on the left grid to start the bill.</div>';
+      } else {
+        list.innerHTML = app.data.cart
+          .map(
+            (item) => `
+          <div class="cart-item" data-product-id="${item.product.id}">
+            <div>
+              <div class="cart-item-name">${item.product.name}</div>
+              <div style="font-size:0.7rem;color:#9ca3af;">${item.product.sku} · ${item.product.location}</div>
+            </div>
+            <div class="cart-item-qty">
+              <button class="qty-btn" data-action="dec">-</button>
+              <span>${item.qty}</span>
+              <button class="qty-btn" data-action="inc">+</button>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;">
+              <div class="cart-item-total">${formatMoney(item.total)}</div>
+              <button class="qty-btn" data-action="remove" style="margin-top:2px;">
+                <i class="fa-solid fa-trash-can" style="font-size:0.7rem;"></i>
+              </button>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+        list.querySelectorAll('.cart-item').forEach((row) => {
+          const id = Number(row.getAttribute('data-product-id'));
+          row.querySelectorAll('.qty-btn').forEach((btn) => {
+            const action = btn.getAttribute('data-action');
+            btn.addEventListener('click', () => adjustCartItem(id, action));
+          });
+        });
+      }
+
+      const total = app.data.cart.reduce((sum, item) => sum + item.total, 0);
+      const itemsCount = app.data.cart.reduce((sum, item) => sum + item.qty, 0);
+      const service = app.data.serviceCharge.amount || 0;
+      const grand = total + service;
+
+      document.getElementById('cart-total').textContent = formatMoney(total);
+      document.getElementById('cart-items-count').textContent = itemsCount.toString();
+      document.getElementById('cart-service-amount').textContent = formatMoney(service);
+      document.getElementById('cart-grand-total').textContent = formatMoney(grand);
+    }
+
+    function renderAttendance() {
+      const tbody = document.querySelector('#attendance-table tbody');
+      tbody.innerHTML = app.data.attendance
+        .slice()
+        .reverse()
+        .map(
+          (a) => `
+        <tr>
+          <td>${new Date(a.date).toLocaleDateString()}</td>
+          <td>${a.employee}</td>
+          <td>${a.shift}</td>
+          <td>${a.status}</td>
+        </tr>
+      `
+        )
+        .join('');
+    }
+
+    function renderExpenses() {
+      const tbody = document.querySelector('#expenses-table tbody');
+      tbody.innerHTML = app.data.expenses
+        .slice()
+        .reverse()
+        .map(
+          (e) => `
+        <tr>
+          <td>${new Date(e.date).toLocaleDateString()}</td>
+          <td>${e.category}</td>
+          <td>${e.description}</td>
+          <td><span class="pill-amount amount-danger">${formatMoney(e.amount)}</span></td>
+        </tr>
+      `
+        )
+        .join('');
+    }
+
+    /**********************
+     * CART & SALES LOGIC
+     **********************/
+    function addToCart(productId) {
+      const product = app.data.products.find((p) => p.id === productId);
+      if (!product) return;
+      if (product.stock <= 0) {
+        showToast('error', 'Out of stock', 'This item is out of stock. Replenish inventory first.');
+        return;
+      }
+      let line = app.data.cart.find((i) => i.product.id === productId);
+      if (!line) {
+        line = { product, qty: 0, total: 0 };
+        app.data.cart.push(line);
+      }
+      if (line.qty + 1 > product.stock) {
+        showToast('error', 'Stock exhausted', 'Cannot sell more than live stock.');
+        return;
+      }
+      line.qty += 1;
+      line.total = line.qty * product.price;
+      renderCart();
+    }
+
+    function adjustCartItem(productId, action) {
+      const line = app.data.cart.find((i) => i.product.id === productId);
+      if (!line) return;
+      if (action === 'inc') {
+        if (line.qty + 1 > line.product.stock) {
+          showToast('error', 'Stock exhausted', 'Cannot sell more than live stock.');
+          return;
+        }
+        line.qty += 1;
+      } else if (action === 'dec') {
+        line.qty -= 1;
+        if (line.qty <= 0) {
+          app.data.cart = app.data.cart.filter((i) => i.product.id !== productId);
+        }
+      } else if (action === 'remove') {
+        app.data.cart = app.data.cart.filter((i) => i.product.id !== productId);
+      }
+      if (line.qty > 0) line.total = line.qty * line.product.price;
+      renderCart();
+    }
+
+    function clearCart() {
+      app.data.cart = [];
+      app.data.serviceCharge = { description: '', amount: 0 };
+      renderCart();
+    }
+
+    function validateCartNotEmpty() {
+      if (app.data.cart.length === 0) {
+        showToast('error', 'Cart empty', 'Add at least one line item before posting.');
+        return false;
+      }
+      return true;
+    }
+
+    function getSelectedCustomer() {
+      const id = Number(document.getElementById('customer-select').value);
+      return findCustomerById(id) || app.data.customers[0];
+    }
+
+    function applyStockReductions() {
+      app.data.cart.forEach((item) => {
+        const product = app.data.products.find((p) => p.id === item.product.id);
+        if (product) product.stock -= item.qty;
+      });
+    }
+
+    let pendingPaymentMethod = null;
+    let pendingBankId = null;
+
+    function openReceiptOptions(method, bankIdIfAny) {
+      pendingPaymentMethod = method;
+      pendingBankId = bankIdIfAny || null;
+      openModal('receipt-options-modal');
+    }
+
+    function finalizeReceipt(option) {
+      closeModal('receipt-options-modal');
+      if (option === 'hold') {
+        holdBill();
+      } else {
+        postSale(pendingPaymentMethod, pendingBankId, option === 'save-print');
+      }
+      pendingPaymentMethod = null;
+      pendingBankId = null;
+    }
+
+    function holdBill() {
+      if (!validateCartNotEmpty()) return;
+      const customer = getSelectedCustomer();
+      const invoiceId = 'HOLD-' + String(app.data.invoiceCounter).padStart(3, '0');
+      const date = new Date().toISOString();
+      const total = app.data.cart.reduce((sum, item) => sum + item.total, 0) + (app.data.serviceCharge.amount || 0);
+
+      app.data.heldBills.push({
+        invoiceId,
+        date,
+        customerId: customer.id,
+        customerName: customer.isGuest ? 'Guest' : customer.name,
+        items: JSON.parse(JSON.stringify(app.data.cart)),
+        service: { ...app.data.serviceCharge },
+        total
+      });
+
+      renderLedger();
+      clearCart();
+      showToast('success', 'Bill held', invoiceId + ' is parked and can be revisited from ledger list.');
+    }
+
+    function postSale(paymentMethod, bankIdIfAny, shouldPrint) {
+      if (!validateCartNotEmpty()) return;
+      const customer = getSelectedCustomer();
+      const invoiceId = 'INV-' + String(app.data.invoiceCounter).padStart(3, '0');
+      app.data.invoiceCounter += 1;
+      const date = new Date().toISOString();
+      const items = app.data.cart.map((item) => ({
+        sku: item.product.sku,
+        name: item.product.name,
+        price: item.product.price,
+        qty: item.qty,
+        total: item.total,
+        costPerUnit: item.product.cost
+      }));
+
+      const totalItemAmount = items.reduce((sum, i) => sum + i.total, 0);
+      const serviceAmount = app.data.serviceCharge.amount || 0;
+      const grandTotal = totalItemAmount + serviceAmount;
+      const costOfGoods = items.reduce((sum, i) => sum + i.costPerUnit * i.qty, 0);
+      const grossProfit = grandTotal - costOfGoods;
+      const net = grossProfit; // net after expenses is handled on dashboard using expense list.
+
+      if (paymentMethod === 'Cash') {
+        const cashBank = app.data.banks.find((b) => b.isCash);
+        if (cashBank) cashBank.balance += grandTotal;
+      } else if (paymentMethod === 'Bank') {
+        const bank = findBankById(bankIdIfAny);
+        if (bank) bank.balance += grandTotal;
+      } else if (paymentMethod === 'Credit') {
+        if (customer.isGuest) {
+          showToast('error', 'Customer required', 'Credit sale is blocked for Guest. Select a named customer.');
+          return;
+        }
+        customer.credit += grandTotal;
+      }
+
+      applyStockReductions();
+
+      app.data.sales.push({
+        invoiceId,
+        date,
+        customerId: customer.id,
+        customerName: customer.isGuest ? 'Guest' : customer.name,
+        paymentMethod,
+        items,
+        service: { ...app.data.serviceCharge },
+        total: grandTotal,
+        costOfGoods,
+        grossProfit,
+        net
+      });
+
+      renderInventory();
+      renderLedger();
+      renderDashboard();
+      renderBanking();
+      renderCustomersTable();
+      renderProducts();
+
+      buildReceipt(invoiceId, paymentMethod, customer, grandTotal, false, customer.credit);
+      clearCart();
+
+      showToast('success', 'Sale complete', 'Invoice ' + invoiceId + ' posted to ' + paymentMethod + (shouldPrint ? ' and sent to print.' : '.'));
+      if (shouldPrint) setTimeout(() => window.print(), 300);
+    }
+
+    /**********************
+     * RECEIPTS
+     **********************/
+    function buildReceipt(invoiceId, paymentMethod, customer, total, isCreditPayment, remainingCredit) {
+      const body = document.getElementById('receipt-body');
+      const now = new Date();
+      const isGuest = customer && customer.isGuest;
+      const customerName = !customer ? 'Unknown' : isGuest ? 'Guest Customer' : customer.name;
+
+      let header = `
+        <div class="receipt-center"><strong>SWAN 1.0 POS</strong></div>
+        <div class="receipt-center">Royal Industrial Web System</div>
+        <div class="receipt-line"></div>
+        <div>Invoice: ${invoiceId}</div>
+        <div>Date: ${now.toLocaleString()}</div>
+        <div>Customer: ${customerName}</div>
+      `;
+
+      if (!isCreditPayment) {
+        const sale = app.data.sales.find((s) => s.invoiceId === invoiceId);
+        const lines = sale.items
+          .map(
+            (l) => `
+          <div class="receipt-row">
+            <span>${l.qty} x ${l.name}</span>
+            <span>${formatMoney(l.total)}</span>
+          </div>
+        `
+          )
+          .join('');
+
+        const serviceLine =
+          sale.service && sale.service.amount
+            ? `
+          <div class="receipt-row">
+            <span>Service: ${sale.service.description || 'Charges'}</span>
+            <span>${formatMoney(sale.service.amount)}</span>
+          </div>`
+            : '';
+
+        body.innerHTML = `
+          ${header}
+          <div>Payment: ${paymentMethod}</div>
+          <div class="receipt-line"></div>
+          ${lines}
+          ${serviceLine}
+          <div class="receipt-line"></div>
+          <div class="receipt-row">
+            <strong>Total</strong>
+            <strong>${formatMoney(total)}</strong>
+          </div>
+          <div style="margin-top:10px;" class="receipt-center">Thank you. No signature required.</div>
+        `;
+      } else {
+        body.innerHTML = `
+          ${header}
+          <div>Transaction: Credit Payment</div>
+          <div class="receipt-line"></div>
+          <div class="receipt-row">
+            <span>Amount Paid</span>
+            <span>${formatMoney(total)}</span>
+          </div>
+          <div class="receipt-row">
+            <span>Remaining Credit</span>
+            <span>${formatMoney(remainingCredit)}</span>
+          </div>
+          <div class="receipt-line"></div>
+          <div class="receipt-center">Payment received. Thank you.</div>
+        `;
+      }
+
+      openModal('receipt-modal');
+    }
+
+    /**********************
+     * CREDIT PAYMENT
+     **********************/
+    let creditPayCustomerId = null;
+
+    function openCreditPayment(customerId) {
+      const customer = findCustomerById(customerId);
+      if (!customer) return;
+      creditPayCustomerId = customerId;
+      document.getElementById('cp-customer-label').textContent =
+        customer.name + ' · Outstanding: ' + formatMoney(customer.credit);
+      document.getElementById('cp-amount').value = '';
+      document.getElementById('cp-method').value = 'Cash';
+      document.getElementById('cp-bank-group').style.display = 'none';
+      openModal('credit-pay-modal');
+    }
+
+    document.getElementById('cp-method').addEventListener('change', (e) => {
+      document.getElementById('cp-bank-group').style.display = e.target.value === 'Bank' ? 'block' : 'none';
+    });
+
+    document.getElementById('credit-pay-save').addEventListener('click', () => {
+      const customer = findCustomerById(creditPayCustomerId);
+      if (!customer) return;
+      const amount = Number(document.getElementById('cp-amount').value || '0');
+      const method = document.getElementById('cp-method').value;
+      const bankId = Number(document.getElementById('cp-bank').value);
+
+      if (!amount || amount <= 0) {
+        showToast('error', 'Amount required', 'Enter a positive payment amount.');
+        return;
+      }
+      if (amount > customer.credit) {
+        showToast('error', 'Too high', 'Payment cannot exceed current credit.');
+        return;
+      }
+
+      if (method === 'Cash') {
+        const cashBank = app.data.banks.find((b) => b.isCash);
+        if (cashBank) cashBank.balance += amount;
+      } else if (method === 'Bank') {
+        const bank = findBankById(bankId);
+        if (bank) bank.balance += amount;
+      }
+
+      customer.credit -= amount;
+      const remaining = customer.credit;
+
+      renderCustomersTable();
+      renderBanking();
+      renderDashboard();
+
+      closeModal('credit-pay-modal');
+      buildReceipt('RCPT-' + String(Date.now()).slice(-6), method, customer, amount, true, remaining);
+      showToast('success', 'Credit updated', 'Payment recorded. Remaining credit: ' + formatMoney(remaining));
+    });
+
+    /**********************
+     * REPORT PRINT HELPERS
+     **********************/
+    function openPrintableWindow(title, html) {
+      const w = window.open('', '_blank');
+      if (!w) {
+        showToast('error', 'Popup blocked', 'Allow popups for printable reports.');
+        return;
+      }
+      w.document.write(`
+        <html>
+          <head>
+            <title>${title}</title>
+            <style>
+              body { font-family: Arial, sans-serif; font-size:12px; padding:10px; }
+              h2 { text-transform:uppercase; letter-spacing:0.16em; font-size:14px; }
+              table { width:100%; border-collapse:collapse; margin-top:8px; }
+              th,td { border:1px solid #111827; padding:4px 5px; text-align:left; }
+              th { background:#111827; color:#f9fafb; font-size:11px; }
+            </style>
+          </head>
+          <body>${html}</body>
+        </html>
+      `);
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    function printProfitReport() {
+      const rows = app.data.sales
+        .map(
+          (s) => `
+        <tr>
+          <td>${s.invoiceId}</td>
+          <td>${new Date(s.date).toLocaleString()}</td>
+          <td>${s.customerName}</td>
+          <td>${formatMoney(s.total)}</td>
+          <td>${formatMoney(s.costOfGoods)}</td>
+          <td>${formatMoney(s.grossProfit)}</td>
+        </tr>
+      `
+        )
+        .join('');
+      const totals = computeTotals();
+      const html = `
+        <h2>Profit Report</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Invoice</th>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Net Sales</th>
+              <th>COGS</th>
+              <th>Gross Profit</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p style="margin-top:10px;">Total Revenue: ${formatMoney(totals.totalRevenue)}<br/>
+        Gross Profit: ${formatMoney(totals.grossProfit)}<br/>
+        Net Profit (after expenses): ${formatMoney(totals.netProfit)}</p>
+      `;
+      openPrintableWindow('Profit Report', html);
+    }
+
+    function printStockReport() {
+      const rows = app.data.products
+        .map(
+          (p) => `
+        <tr>
+          <td>${p.sku}</td>
+          <td>${p.name}</td>
+          <td>${p.category}</td>
+          <td>${p.location}</td>
+          <td>${p.stock}</td>
+          <td>${formatMoney(p.cost)}</td>
+          <td>${formatMoney(p.stock * p.cost)}</td>
+        </tr>
+      `
+        )
+        .join('');
+      const value = computeStockValue();
+      const html = `
+        <h2>Stock Report</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Qty</th>
+              <th>Cost</th>
+              <th>Stock Value</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p style="margin-top:10px;">Total Stock Value: ${formatMoney(value)}</p>
+      `;
+      openPrintableWindow('Stock Report', html);
+    }
+
+    /**********************
+     * EVENT BINDINGS
+     **********************/
+    document.getElementById('product-search').addEventListener('input', renderProducts);
+    document.getElementById('category-filter').addEventListener('change', renderProducts);
+
+    document.getElementById('btn-clear-cart').addEventListener('click', () => {
+      if (app.data.cart.length === 0) {
+        showToast('error', 'Cart empty', 'Nothing to clear.');
+        return;
+      }
+      clearCart();
+      showToast('success', 'Cart cleared', 'All line items were removed.');
+    });
+
+    // Service charges
+    document.getElementById('btn-set-service').addEventListener('click', () => {
+      document.getElementById('sm-desc').value = app.data.serviceCharge.description || '';
+      document.getElementById('sm-amount').value = app.data.serviceCharge.amount || '';
+      openModal('service-modal');
+    });
+
+    document.getElementById('service-modal-save').addEventListener('click', () => {
+      const desc = document.getElementById('sm-desc').value.trim() || 'Service Charges';
+      const amount = Number(document.getElementById('sm-amount').value || '0');
+      if (amount < 0) {
+        showToast('error', 'Invalid amount', 'Service charges cannot be negative.');
+        return;
+      }
+      app.data.serviceCharge = { description: desc, amount };
+      closeModal('service-modal');
+      renderCart();
+      showToast('success', 'Service updated', 'Service charges applied to current bill.');
+    });
+
+    // Payment buttons go through receipt options
+    document.getElementById('btn-cash').addEventListener('click', () => {
+      if (!validateCartNotEmpty()) return;
+      openReceiptOptions('Cash');
+    });
+
+    let pendingBankCheckout = false;
+    document.getElementById('btn-bank').addEventListener('click', () => {
+      if (!validateCartNotEmpty()) return;
+      if (app.data.banks.filter((b) => !b.isCash).length === 0) {
+        showToast('error', 'No bank configured', 'Add at least one bank in Banking tab first.');
+        return;
+      }
+      renderBankSelects();
+      pendingBankCheckout = true;
+      openModal('bank-modal');
+    });
+
+    document.getElementById('bank-modal-confirm').addEventListener('click', () => {
+      if (!pendingBankCheckout) {
+        closeModal('bank-modal');
+        return;
+      }
+      const bankId = Number(document.getElementById('bank-select').value);
+      if (!bankId) {
+        showToast('error', 'Select bank', 'Choose a receiving bank account first.');
+        return;
+      }
+      closeModal('bank-modal');
+      pendingBankCheckout = false;
+      openReceiptOptions('Bank', bankId);
+    });
+
+    document.getElementById('btn-credit').addEventListener('click', () => {
+      if (!validateCartNotEmpty()) return;
+      const customer = getSelectedCustomer();
+      if (customer.isGuest) {
+        showToast('error', 'Customer required', 'Credit sale is blocked for Guest. Select a named customer.');
+        return;
+      }
+      openReceiptOptions('Credit');
+    });
+
+    // Receipt options button wiring
+    document.getElementById('ro-hold').addEventListener('click', () => finalizeReceipt('hold'));
+    document.getElementById('ro-save').addEventListener('click', () => finalizeReceipt('save'));
+    document.getElementById('ro-save-print').addEventListener('click', () => finalizeReceipt('save-print'));
+
+    // Add product
+    document.getElementById('btn-add-product').addEventListener('click', () => {
+      document.getElementById('pm-sku').value = '';
+      document.getElementById('pm-name').value = '';
+      document.getElementById('pm-category').value = '';
+      document.getElementById('pm-location').value = '';
+      document.getElementById('pm-price').value = '';
+      document.getElementById('pm-cost').value = '';
+      document.getElementById('pm-stock').value = '';
+      openModal('product-modal');
+    });
+
+    document.getElementById('product-modal-save').addEventListener('click', () => {
+      const sku = document.getElementById('pm-sku').value.trim();
+      const name = document.getElementById('pm-name').value.trim();
+      const category = document.getElementById('pm-category').value.trim() || 'Uncategorized';
+      const location = document.getElementById('pm-location').value.trim() || 'Main';
+      const price = Number(document.getElementById('pm-price').value);
+      const cost = Number(document.getElementById('pm-cost').value);
+      const stock = Number(document.getElementById('pm-stock').value);
+      if (!sku || !name || !price || !stock) {
+        showToast('error', 'Missing data', 'SKU, Name, Price, and Opening Stock are mandatory.');
+        return;
+      }
+      const id = app.data.products.length ? Math.max(...app.data.products.map((p) => p.id)) + 1 : 1;
+      app.data.products.push({ id, sku, name, category, location, price, cost: cost || 0, stock });
+      closeModal('product-modal');
+      renderInventory();
+      renderProducts();
+      renderCategoryFilter();
+      showToast('success', 'Item added', name + ' added to inventory and POS grid.');
+    });
+
+    // Add bank
+    document.getElementById('btn-add-bank').addEventListener('click', () => {
+      document.getElementById('bm-name').value = '';
+      document.getElementById('bm-type').value = 'Current Account';
+      document.getElementById('bm-balance').value = '';
+      openModal('add-bank-modal');
+    });
+
+    document.getElementById('add-bank-save').addEventListener('click', () => {
+      const name = document.getElementById('bm-name').value.trim();
+      const type = document.getElementById('bm-type').value.trim() || 'Current Account';
+      const balance = Number(document.getElementById('bm-balance').value || '0');
+      if (!name) {
+        showToast('error', 'Account title', 'Provide a descriptive bank name.');
+        return;
+      }
+      const id = app.data.banks.length ? Math.max(...app.data.banks.map((b) => b.id)) + 1 : 1;
+      app.data.banks.push({ id, name, type, balance });
+      closeModal('add-bank-modal');
+      renderBanking();
+      renderBankSelects();
+      showToast('success', 'Bank added', name + ' is now available as receiving account.');
+    });
+
+    // Add customer
+    const openCustomerModal = () => {
+      document.getElementById('cm-name').value = '';
+      document.getElementById('cm-phone').value = '';
+      document.getElementById('cm-opening').value = '';
+      openModal('customer-modal');
+    };
+    document.getElementById('btn-add-customer-main').addEventListener('click', openCustomerModal);
+    document.getElementById('btn-add-customer-inline').addEventListener('click', openCustomerModal);
+
+    document.getElementById('customer-modal-save').addEventListener('click', () => {
+      const name = document.getElementById('cm-name').value.trim();
+      const phone = document.getElementById('cm-phone').value.trim();
+      const opening = Number(document.getElementById('cm-opening').value || '0');
+      if (!name) {
+        showToast('error', 'Name required', 'Provide at least a trade or contact name.');
+        return;
+      }
+      const id = app.data.customers.length ? Math.max(...app.data.customers.map((c) => c.id)) + 1 : 1;
+      app.data.customers.push({ id, name, phone, credit: opening, opening, isGuest: false });
+      closeModal('customer-modal');
+      renderCustomersTable();
+      renderCustomersDropdown();
+      document.getElementById('customer-select').value = String(id);
+      renderDashboard();
+      showToast('success', 'Customer added', name + ' is ready for credit billing.');
+    });
+
+    // Attendance
+    document.getElementById('btn-add-employee').addEventListener('click', () => {
+      document.getElementById('em-name').value = '';
+      document.getElementById('em-shift').value = 'Morning';
+      document.getElementById('em-status').value = 'Present';
+      openModal('employee-modal');
+    });
+
+    document.getElementById('employee-save').addEventListener('click', () => {
+      const name = document.getElementById('em-name').value.trim();
+      const shift = document.getElementById('em-shift').value.trim() || 'General';
+      const status = document.getElementById('em-status').value;
+      if (!name) {
+        showToast('error', 'Name required', 'Employee name is required.');
+        return;
+      }
+      app.data.attendance.push({ date: new Date().toISOString(), employee: name, shift, status });
+      closeModal('employee-modal');
+      renderAttendance();
+      showToast('success', 'Attendance saved', name + ' marked as ' + status + '.');
+    });
+
+    // Expenses
+    document.getElementById('btn-add-expense').addEventListener('click', () => {
+      document.getElementById('ex-category').value = '';
+      document.getElementById('ex-desc').value = '';
+      document.getElementById('ex-amount').value = '';
+      openModal('expense-modal');
+    });
+
+    document.getElementById('expense-save').addEventListener('click', () => {
+      const category = document.getElementById('ex-category').value.trim() || 'General';
+      const desc = document.getElementById('ex-desc').value.trim() || 'Expense';
+      const amount = Number(document.getElementById('ex-amount').value || '0');
+      if (!amount || amount <= 0) {
+        showToast('error', 'Amount required', 'Enter a positive expense amount.');
+        return;
+      }
+      app.data.expenses.push({ date: new Date().toISOString(), category, description: desc, amount });
+      closeModal('expense-modal');
+      renderExpenses();
+      renderDashboard();
+      showToast('success', 'Expense added', category + ' recorded.');
+    });
+
+    // Reports buttons
+    document.getElementById('btn-print-profit-report').addEventListener('click', printProfitReport);
+    document.getElementById('btn-print-stock-report').addEventListener('click', printStockReport);
+    document.getElementById('btn-stock-report-top').addEventListener('click', printStockReport);
+    document.getElementById('btn-show-stock-value').addEventListener('click', () => {
+      const value = computeStockValue();
+      showToast('success', 'Stock value', 'Current on-hand stock value: ' + formatMoney(value));
+    });
+
+    // Browser print for receipt
+    document.getElementById('btn-print-receipt').addEventListener('click', () => {
+      window.print();
+    });
+
+    /**********************
+     * INITIALIZE
+     **********************/
+    function init() {
+      renderDashboard();
+      renderCategoryFilter();
+      renderProducts();
+      renderCustomersDropdown();
+      renderInventory();
+      renderBanking();
+      renderBankSelects();
+      renderCustomersTable();
+      renderLedger();
+      renderCart();
+      renderAttendance();
+      renderExpenses();
+    }
+
+    init();
+  </script>
+</body>
+</html>
